@@ -116,14 +116,14 @@ func (o Object) Length() int {
 	return o.value.Length()
 }
 
-// Set sets the property p to the value of js.ValueOf(x).
+// Set sets the property p to the value of ToJSValue(x).
 func (o Object) Set(p string, x interface{}) {
-	o.value.Set(p, x)
+	o.value.Set(p, ToJSValue(x))
 }
 
-// SetIndex sets the index i to the value of js.ValueOf(x).
+// SetIndex sets the index i to the value of ToJSValue(x).
 func (o Object) SetIndex(i int, x interface{}) {
-	o.value.SetIndex(i, x)
+	o.value.SetIndex(i, ToJSValue(x))
 }
 
 // String returns the object marshalled as a JSON string for debugging purposes.
