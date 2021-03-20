@@ -1,0 +1,22 @@
+{
+  "name": "go-mod-wasm",
+  "version": "0.0.1",
+  "description": "whatever",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitea.teamortix.com/Team-Ortix/go-mod-wasm"
+  },
+  "keywords": [
+    "golang",
+    "wasm",
+    "modules",
+    "loader",
+    "webpack"
+  ],
+  "author": "hhhapz, chanbakjsd",
+  "license": "MIT"
+}
