@@ -2,7 +2,7 @@
   "name": "go-mod-wasm",
   "version": "0.1.2",
   "description": "A webpack-based configuration to work with wasm using Go.",
-  "main": "index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://gitea.teamortix.com/Team-Ortix/go-mod-wasm"

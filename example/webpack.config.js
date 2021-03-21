@@ -35,7 +35,7 @@ module.exports = {
                 test: /\.go$/,
                 use: [
                     {
-                        loader: path.resolve(__dirname, '../index.js')
+                        loader: path.resolve(__dirname, '../src/index.js')
                     }
                 ]
             }

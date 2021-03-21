@@ -2,15 +2,13 @@ package main
 
 import (
 	"fmt"
-
-	"gitea.teamortix.com/Team-Ortix/go-mod-wasm/wasm"
+	"syscall/js"
 )
 
 func main() {
-	c := make(chan bool, 0)
-
 	fmt.Println("Hello from go-mod-wasm!")
+	js.Global().Get("__go_wasm__").Set("__ready__", true)
 
-	wasm.Ready()
+	c := make(chan bool, 0) // in Go Wasm, the program may not exit
 	<-c
 }
