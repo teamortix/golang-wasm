@@ -16,6 +16,10 @@ type goThrowable struct {
 	Error  js.Value `wasm:"error"`
 }
 
+// toJSFunc takes a reflect.Value of a Go function and converts it to a JS function that:
+// Errors if the parameter types do not conform to the Go function signature,
+// Throws an error if the last returned value is an error and is non-nil,
+// Return an array if there's multiple non-error return values.
 func toJSFunc(x reflect.Value) js.Value {
 	funcType := x.Type()
 	var hasError bool
@@ -53,6 +57,8 @@ func toJSFunc(x reflect.Value) js.Value {
 
 var jsValueType = reflect.TypeOf(js.Value{})
 
+// conformJSValueToType attempts to convert the provided JS values to reflect.Values that match the
+// types expected for the parameters of funcType.
 func conformJSValueToType(funcType reflect.Type, this js.Value, values []js.Value) ([]reflect.Value, error) {
 	if funcType.NumIn() == 0 {
 		if len(values) != 0 {
@@ -62,6 +68,7 @@ func conformJSValueToType(funcType reflect.Type, this js.Value, values []js.Valu
 	}
 
 	if funcType.In(0) == jsValueType {
+		// If the first parameter is a js.Value, it is assumed to be the value of `this`.
 		values = append([]js.Value{this}, values...)
 	}
 
@@ -88,6 +95,10 @@ func conformJSValueToType(funcType reflect.Type, this js.Value, values []js.Valu
 	return in, nil
 }
 
+// returnValue wraps returned values by Go in a JS-friendly way.
+// If there are no returned values, it returns undefined.
+// If there is exactly one, it returns the JS equivalent.
+// If there is more than one, it returns an array containing the JS equivalent of every returned value.
 func returnValue(x []reflect.Value) js.Value {
 	switch len(x) {
 	case 0:

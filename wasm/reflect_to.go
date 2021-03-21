@@ -71,6 +71,7 @@ func ToJSValue(x interface{}) js.Value {
 	}
 }
 
+// toJSArray converts the provided array or slice to a JS array.
 func toJSArray(x reflect.Value) js.Value {
 	arrayConstructor, err := Global().Get("Array")
 	if err != nil {
@@ -85,6 +86,7 @@ func toJSArray(x reflect.Value) js.Value {
 	return array
 }
 
+// mapToJSObject converts the provided map to a JS object.
 func mapToJSObject(x reflect.Value) js.Value {
 	objectConstructor, err := Global().Get("Object")
 	if err != nil {
@@ -134,6 +136,7 @@ func mapToJSObject(x reflect.Value) js.Value {
 	return obj
 }
 
+// structToJSObject converts a struct to a JS object.
 func structToJSObject(x reflect.Value) js.Value {
 	objectConstructor, err := Global().Get("Object")
 	if err != nil {
