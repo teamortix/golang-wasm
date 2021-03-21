@@ -58,11 +58,11 @@ module.exports = function (source) {
         }
 
 
-        const res = await execFile("go", ["build", "-o", outFile, parent], opts)
+        const result = await execFile("go", ["build", "-o", outFile, parent], opts)
             .then(() => true)
             .catch(e => e);
-        if (res instanceof Error) {
-            return cb(e);
+        if (result instanceof Error) {
+            return cb(result);
         }
 
         found = await fs.access(wasmSavePath).then(() => true).catch(() => false);
