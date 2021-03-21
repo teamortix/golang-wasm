@@ -35,10 +35,8 @@ export default function (getBytes) {
                 return (...args) => {
                     return new Promise(async (res, rej) => {
                         while (bridge.__ready__ !== true) {
-                            console.log("waiting")
                             await sleep()
                         }
-                        console.log("done!")
 
                         if (typeof bridge[key] !== 'function') {
                             res(bridge[key]);

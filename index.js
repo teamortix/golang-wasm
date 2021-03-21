@@ -68,8 +68,7 @@ module.exports = function (source) {
         if (!(await exists(__dirname, 'wasm_exec.js'))) {
             fs.copyFileSync(wasmOrigPath, wasmEmitPath)
         }
-
-        let contents = fs.readFileSync(outFile)
+        const contents = fs.readFileSync(outFile)
         fs.unlinkSync(outFile)
 
         const emitPath = path.basename(outFile)
