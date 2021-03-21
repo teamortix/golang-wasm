@@ -1,3 +1,4 @@
 node_modules
 example/node_modules
 .gocache
+wasm_exec.js

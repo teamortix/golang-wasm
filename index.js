@@ -1,8 +1,7 @@
 const fs = require("fs")
-const { execSync, execFileSync } = require("child_process")
+const { execFileSync } = require("child_process")
 const path = require("path")
 const { lookpath } = require("lookpath")
-const { executionAsyncResource } = require("async_hooks")
 
 const exists = async (dir, file) => {
     return new Promise((res, rej) => {
@@ -21,6 +20,11 @@ module.exports = function (source) {
     const goBin = lookpath("go");
     if (!goBin) {
         return cb(new Error("go bin not found in path."));
+    }
+
+    if (!process.env.GOROOT) {
+        return cb(new Error("Could not find GOROOT in environment.\n" +
+            "Please try adding this to your script:\nGOROOT=`go env GOROOT` npm run ..."))
     }
 
     const parent = path.dirname(this.resourcePath)
@@ -59,7 +63,11 @@ module.exports = function (source) {
             return cb(e)
         }
 
-        const wasmPath = path.join(process.env.GOROOT, "misc", "wasm", "wasm_exec.js")
+        const wasmOrigPath = path.join(process.env.GOROOT, "misc", "wasm", "wasm_exec.js")
+        const wasmEmitPath = path.join(__dirname, 'wasm_exec.js')
+        if (!(await exists(__dirname, 'wasm_exec.js'))) {
+            fs.copyFileSync(wasmOrigPath, wasmEmitPath)
+        }
 
         let contents = fs.readFileSync(outFile)
         fs.unlinkSync(outFile)
@@ -69,7 +77,7 @@ module.exports = function (source) {
         this.addContextDependency(modDir)
 
         cb(null,
-            `require('!${wasmPath}')
+            `require('!${wasmEmitPath}')
 import goWasm from '${path.join(__dirname, 'bridge.js')}';
 
 const wasm = fetch('${emitPath}').then(response => response.arrayBuffer())

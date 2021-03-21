@@ -2,6 +2,11 @@ const path = require('path');
 
 module.exports = {
     entry: './src/index.js',
+    devServer: {
+        contentBase: path.resolve(__dirname, 'dist'),
+        compress: true,
+        port: 3000,
+    },
     mode: "production",
     output: {
         filename: 'main.js',
@@ -36,4 +41,14 @@ module.exports = {
             }
         ]
     },
+    performance: {
+        assetFilter: (file) => {
+            return !/\.wasm/.test(file)
+        }
+    },
+    ignoreWarnings: [
+        {
+            module: /wasm_exec.js$/
+        }
+    ]
 };

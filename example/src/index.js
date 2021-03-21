@@ -1,6 +1,5 @@
-import wasm from './main.go';
+import wasm from './api/main.go';
 
 (async () => {
-    console.log(wasm)
-    console.log(await wasm.test(), "..")
+
 })()

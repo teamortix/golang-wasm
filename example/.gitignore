@@ -1,0 +1,4 @@
+dist/main.wasm
+dist/main.js
+node_modules
+src/api/main.wasm
