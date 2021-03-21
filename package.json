@@ -1,6 +1,6 @@
 {
   "name": "go-mod-wasm",
-  "version": "0.1.2",
+  "version": "0.1.0",
   "description": "A webpack-based configuration to work with wasm using Go.",
   "main": "src/index.js",
   "repository": {

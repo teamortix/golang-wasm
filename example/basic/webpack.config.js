@@ -7,13 +7,13 @@ module.exports = {
         compress: true,
         port: 3000,
     },
-    mode: "production",
+    mode: "development",
     output: {
         filename: 'main.js',
         path: path.resolve(__dirname, 'dist'),
     },
     resolve: {
-        extensions: [".go", ".tsx", ".ts", ".js"],
+        extensions: [".js", ".go"],
         fallback: {
             "fs": false,
             "os": false,
@@ -26,7 +26,6 @@ module.exports = {
             "https": false,
             "stream": false,
             "crypto": false,
-            "crypto-browserify": require.resolve('crypto-browserify'), //if you want to use this module also don't forget npm i crypto-browserify 
         }
     },
     module: {
@@ -35,7 +34,7 @@ module.exports = {
                 test: /\.go$/,
                 use: [
                     {
-                        loader: path.resolve(__dirname, '../src/index.js')
+                        loader: path.resolve(__dirname, '../../src/index.js')
                     }
                 ]
             }
@@ -43,7 +42,7 @@ module.exports = {
     },
     performance: {
         assetFilter: (file) => {
-            return !/\.wasm/.test(file)
+            return !/(\.wasm|.map)$/.test(file)
         }
     },
     ignoreWarnings: [
