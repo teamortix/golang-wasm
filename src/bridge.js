@@ -7,6 +7,26 @@ const maxTime = 3 * 1000;
 
 const bridge = g.__go_wasm__;
 
+
+/**
+ * Wrapper is used by Go to run all Go functions in JS.
+ * Go functions always return an object of the following spec:
+ * {
+ *  result:  undefined | any         // undefined when error is returned, or function returns undefined
+ *  error:       Error | undefined   // undefined when no error is present
+ * }
+ */
+function wrapper(goFunc) {
+    return (...args) => {
+        const result = goFunc.apply(undefined, args);
+        if (result.error instanceof Error) {
+            throw result.error;
+        }
+        return result.result;
+    }
+}
+bridge.__wrapper__ = wrapper
+
 function sleep() {
     return new Promise(requestAnimationFrame);
 }
@@ -44,14 +64,11 @@ export default function (getBytes) {
                             return;
                         }
 
-                        const returnObj = bridge[key].apply(undefined, args);
-                        if (returnObj.error instanceof Error) {
-                            return rej(returnObj.error)
+                        try {
+                            res(bridge[key].apply(undefined, args));
+                        } catch (e) {
+                            rej(e)
                         }
-
-                        if (returnObj.result) return res(returnObj.result);
-
-                        return res(returnObj)
                     })
                 };
             }
