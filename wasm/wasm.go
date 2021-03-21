@@ -1,12 +1,18 @@
 package wasm
 
+import "syscall/js"
+
 // Magic values to communicate with the JS library.
 const (
-	globalIdent = "__go_wasm__"
-	readyHint   = "__ready__"
+	globalIdent     = "__go_wasm__"
+	readyHint       = "__ready__"
+	funcWrapperName = "__wrapper__"
 )
 
-var bridge Object
+var (
+	bridge      Object
+	funcWrapper js.Value
+)
 
 func init() {
 	bridgeJS, err := Global().Get(globalIdent)
@@ -17,6 +23,11 @@ func init() {
 	bridge, err = NewObject(bridgeJS)
 	if err != nil {
 		panic("JS wrapper " + globalIdent + " is not an object")
+	}
+
+	funcWrapper, err = bridge.Get(funcWrapperName)
+	if err != nil {
+		panic("JS wrapper " + globalIdent + "." + funcWrapperName + " not found")
 	}
 }
 

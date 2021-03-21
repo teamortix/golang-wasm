@@ -27,7 +27,7 @@ func toJSFunc(x reflect.Value) js.Value {
 		hasError = funcType.Out(funcType.NumOut()-1) == errorType
 	}
 
-	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+	return funcWrapper.Invoke(js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		in, err := conformJSValueToType(funcType, this, args)
 		if err != nil {
 			return ToJSValue(goThrowable{
@@ -52,7 +52,7 @@ func toJSFunc(x reflect.Value) js.Value {
 		return ToJSValue(goThrowable{
 			Result: returnValue(out[:len(out)-1]),
 		})
-	}).JSValue()
+	}))
 }
 
 var jsValueType = reflect.TypeOf(js.Value{})
