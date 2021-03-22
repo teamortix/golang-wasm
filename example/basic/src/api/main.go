@@ -5,16 +5,24 @@ import (
 	"syscall/js"
 )
 
-func main() {
-	fmt.Println("Hello from go-mod-wasm!")
-	setup()
+const hello = "Hello!"
 
-	c := make(chan bool, 0) // To use anything from Go WASM, the program may not exit.
-	<-c
+// helloName's first value is JavaScript's `this`.
+// However, the way that the JS bridge is written, it will always be JavaScript's undefined.
+//
+// If returning a non-nil error value, the resulting promise will be rejected by API consumers.
+// The rejected value will JavaScript's Error, with the message being the go error's message.
+//
+// See other examples which use the Go wasm bridge api, which show more flexibility and type safety when interacting
+// with JavaScript.
+func helloName(_ js.Value, args []js.Value) (interface{}, error) {
+	return fmt.Sprintf("Hello, %s!", args[0].String()), nil
 }
 
-func setup() {
-	fmt.Println("golang-wasm initialized")
+func main() {
+	fmt.Println("go-mod-wasm initialized")
 
-	js.Global()
+	setFunc("helloName", helloName)
+	setValue("hello", hello)
+	ready()
 }
