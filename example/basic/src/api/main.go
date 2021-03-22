@@ -20,7 +20,7 @@ func helloName(_ js.Value, args []js.Value) (interface{}, error) {
 }
 
 func main() {
-	fmt.Println("go-mod-wasm initialized")
+	fmt.Println("golang-wasm initialized")
 
 	setFunc("helloName", helloName)
 	setValue("hello", hello)
