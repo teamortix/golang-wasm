@@ -1,11 +1,11 @@
 {
-  "name": "go-mod-wasm",
-  "version": "0.1.0",
+  "name": "golang-wasm",
+  "version": "0.0.1",
   "description": "A webpack-based configuration to work with wasm using Go.",
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "https://gitea.teamortix.com/Team-Ortix/go-mod-wasm"
+    "url": "https://gitea.teamortix.com/Team-Ortix/golang-wasm"
   },
   "keywords": [
     "golang",

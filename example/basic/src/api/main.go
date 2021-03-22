@@ -13,19 +13,8 @@ func main() {
 	<-c
 }
 
-const hello = "Sample value"
-
-func helloName(_ js.Value, args []js.Value) interface{} {
-	return fmt.Sprintf("Hello, %s!", args[0].String())
-}
-
 func setup() {
-	bridge := js.Global().Get("__go_wasm__")
-
-	bridge.Set("__ready__", true)
-
-	bridge.Set("hello", hello)
-	bridge.Set("helloName", js.FuncOf(helloName))
+	fmt.Println("golang-wasm initialized")
 
 	js.Global()
 }
