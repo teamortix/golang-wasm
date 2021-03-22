@@ -83,13 +83,13 @@ func conformJSValueToType(funcType reflect.Type, this js.Value, values []js.Valu
 	in := make([]reflect.Value, 0, len(values))
 	for i, v := range values {
 		paramType := funcType.In(i)
-		x := reflect.Zero(paramType).Interface()
-		err := FromJSValue(v, &x)
+		ptrX := reflect.New(paramType).Interface()
+		err := FromJSValue(v, ptrX)
 		if err != nil {
 			return nil, err
 		}
 
-		in = append(in, reflect.ValueOf(x))
+		in = append(in, reflect.ValueOf(ptrX).Elem())
 	}
 
 	return in, nil
