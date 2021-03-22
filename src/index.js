@@ -43,10 +43,13 @@ module.exports = function (source) {
             }
             modDir = path.join(modDir, "..");
         }
-
         if (!found) {
             return cb(new Error("Could not find go.mod in any parent directory of " + this.resourcePath));
         }
+
+        // Having context dependency before compilation means if any file apart from the imported one fails in 
+        // compilation, the updates are still watched.
+        this.addContextDependency(modDir);
 
         const wasmOrigPath = path.join(process.env.GOROOT, "misc", "wasm", "wasm_exec.js");
         const wasmSavePath = path.join(__dirname, 'wasm_exec.js');
@@ -73,7 +76,6 @@ module.exports = function (source) {
 
         const emitPath = path.basename(outFile);
         this.emitFile(emitPath, contents);
-        this.addContextDependency(modDir);
 
         cb(null,
             `require('!${wasmSavePath}');
