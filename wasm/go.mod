@@ -1,3 +1,3 @@
-module gitea.teamortix.com/Team-Ortix/go-mod-wasm/wasm
+module github.com/teamortix/golang-wasm/wasm
 
 go 1.16
