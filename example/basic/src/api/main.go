@@ -13,7 +13,7 @@ const hello = "Hello!"
 // If returning a non-nil error value, the resulting promise will be rejected by API consumers.
 // The rejected value will JavaScript's Error, with the message being the go error's message.
 //
-// See other examples which use the Go wasm bridge api, which show more flexibility and type safety when interacting
+// See other examples which use the Go WASM bridge api, which show more flexibility and type safety when interacting
 // with JavaScript.
 func helloName(_ js.Value, args []js.Value) (interface{}, error) {
 	return fmt.Sprintf("Hello, %s!", args[0].String()), nil
