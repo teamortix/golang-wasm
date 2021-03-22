@@ -1,19 +1,31 @@
+// Initially, the __go_wasm__ object will be an empty object. 
 const g = global || window || self;
 if (!g.__go_wasm__) {
     g.__go_wasm__ = {};
 }
 
+/**
+ * The maximum amount of time that we would expect Wasm to take to initialize.
+ * If it doesn't initialize after this time, we send a warning to console.
+ * Most likely something has gone wrong if it takes more than 3 sconds to initialize.
+ */
 const maxTime = 3 * 1000;
 
+/**
+ * bridge is an easier way to refer to the Go wasm object.
+ */
 const bridge = g.__go_wasm__;
 
 /**
  * Wrapper is used by Go to run all Go functions in JS.
- * Go functions always return an object of the following spec:
+ * 
+ * @param {Function} goFunc a function that is expected to return an object of the following specification:
  * {
  *  result:  undefined | any         // undefined when error is returned, or function returns undefined
  *  error:       Error | undefined   // undefined when no error is present
  * }
+ * 
+ * @returns {Function} returns a function that take arguments which are used to call the Go function.
  */
 function wrapper(goFunc) {
     return (...args) => {
@@ -25,19 +37,38 @@ function wrapper(goFunc) {
     }
 }
 
+/**
+ * Sleep is used when awaiting for Go Wasm to initialize.
+ * It uses the lowest possible sane delay time (via requestAnimationFrame).
+ * However, if the window is not focused, the function never returns.
+ * A timeout will ensure to be called after 50 ms, regardless of whether or not the tab is in focus.
+ * 
+ * @returns {Promise} an always-resolving promise when a tick has been completed
+ */
 function sleep() {
     return new Promise((res) => {
-        requestAnimationFrame(() => res())
+        requestAnimationFrame(() => res());
         setTimeout(() => {
-            res()
+            res();
         }, 50);
     });
 }
+
+/**
+ * @param {ArrayBuffer} getBytes a promise that is bytes of the Go Wasm object.
+ * 
+ * @returns {Proxy} an object that can be used to call Wasm's objects and properly parse their results.
+ * 
+ * All values that want to be retrieved from the proxy, regardless of if they are a function or not, must be retrieved
+ * as if they are from a function call. 
+ * 
+ * If a non-function value is returned however arguments are provided, a warning will be printed.
+ */
 export default function (getBytes) {
     let proxy;
 
     async function init() {
-        bridge.__wrapper__ = wrapper
+        bridge.__wrapper__ = wrapper;
 
         const go = new g.Go();
         let bytes = await getBytes;
@@ -65,13 +96,17 @@ export default function (getBytes) {
 
                         if (typeof bridge[key] !== 'function') {
                             res(bridge[key]);
+
+                            if (args.length !== 0) {
+                                console.warn("Retrieved value from web assembly returned non-error type, however called with arguments.")
+                            }
                             return;
                         }
 
                         try {
                             res(bridge[key].apply(undefined, args));
                         } catch (e) {
-                            rej(e)
+                            rej(e);
                         }
                     })
                 };
@@ -79,6 +114,6 @@ export default function (getBytes) {
         }
     );
 
-    bridge.__proxy__ = proxy
+    bridge.__proxy__ = proxy;
     return proxy;
 }
