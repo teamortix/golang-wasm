@@ -7,12 +7,12 @@ if (!g.__go_wasm__) {
 /**
  * The maximum amount of time that we would expect Wasm to take to initialize.
  * If it doesn't initialize after this time, we send a warning to console.
- * Most likely something has gone wrong if it takes more than 3 sconds to initialize.
+ * Most likely something has gone wrong if it takes more than 3 seconds to initialize.
  */
 const maxTime = 3 * 1000;
 
 /**
- * bridge is an easier way to refer to the Go wasm object.
+ * bridge is an easier way to refer to the Go WASM object.
  */
 const bridge = g.__go_wasm__;
 
@@ -40,7 +40,7 @@ function wrapper(goFunc) {
 /**
  * Sleep is used when awaiting for Go Wasm to initialize.
  * It uses the lowest possible sane delay time (via requestAnimationFrame).
- * However, if the window is not focused, the function never returns.
+ * However, if the window is not focused, requestAnimationFrame never returns.
  * A timeout will ensure to be called after 50 ms, regardless of whether or not the tab is in focus.
  * 
  * @returns {Promise} an always-resolving promise when a tick has been completed
@@ -79,7 +79,7 @@ export default function (getBytes) {
     init();
     setTimeout(() => {
         if (bridge.__ready__ !== true) {
-            console.warn("Golang Wasm Bridge (__go_wasm__.__ready__) still not true after max time");
+            console.warn("Golang WASM Bridge (__go_wasm__.__ready__) still not true after max time");
         }
     }, maxTime);
 
@@ -98,7 +98,7 @@ export default function (getBytes) {
                             res(bridge[key]);
 
                             if (args.length !== 0) {
-                                console.warn("Retrieved value from web assembly returned non-error type, however called with arguments.")
+                                console.warn("Retrieved value from WASM returned non-error type, however called with arguments.")
                             }
                             return;
                         }

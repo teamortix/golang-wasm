@@ -14,7 +14,7 @@ var (
 	// Wrapper is a simple JS function that when called with a Go Function, will return a new function that will throw
 	// if the property `error` is an instance of JavaScript's `error`.
 	//
-	// All Go functions in the bridgeName proxy are  expected to be the result of calling wrapper with the Go function.
+	// All Go functions in the bridgeName proxy are expected to be the result of calling wrapper with the Go function.
 	wrapper js.Value
 )
 
@@ -39,11 +39,11 @@ func newReturnError(goErr error) js.Value {
 }
 
 // Using this wrapper makes it possible to throw errors in go-fashion.
-// This means that all wrapped functions must return error and a value.
+// This means that all wrapped functions must return value and an error (respectively).
 //
 // The __wrapper__ function from JS will automatically throw if the returned object has an 'error' property.
-// Inversly, it will automatically give the result value if that property exists.
-// All go functions directly returned via wasm should keep this in mind.
+// Inversely, it will automatically give the result value if that property exists.
+// All Go functions directly returned via wasm should keep this in mind.
 func wrapGoFunc(f func(js.Value, []js.Value) (interface{}, error)) js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		res, err := f(this, args)
