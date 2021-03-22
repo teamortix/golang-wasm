@@ -7,7 +7,6 @@ const maxTime = 3 * 1000;
 
 const bridge = g.__go_wasm__;
 
-
 /**
  * Wrapper is used by Go to run all Go functions in JS.
  * Go functions always return an object of the following spec:
@@ -25,28 +24,33 @@ function wrapper(goFunc) {
         return result.result;
     }
 }
-bridge.__wrapper__ = wrapper
 
 function sleep() {
-    return new Promise(requestAnimationFrame);
+    return new Promise((res) => {
+        requestAnimationFrame(() => res())
+        setTimeout(() => {
+            res()
+        }, 50);
+    });
 }
 export default function (getBytes) {
     let proxy;
 
     async function init() {
+        bridge.__wrapper__ = wrapper
+
         const go = new g.Go();
         let bytes = await getBytes;
         let result = await WebAssembly.instantiate(bytes, go.importObject);
         go.run(result.instance);
-        bridge.__proxy__ = proxy
-        setTimeout(() => {
-            if (bridge.__ready__ !== true) {
-                console.warn("Golang Wasm Bridge (__go_wasm__.__ready__) still not true after max time");
-            }
-        }, maxTime);
     }
 
     init();
+    setTimeout(() => {
+        if (bridge.__ready__ !== true) {
+            console.warn("Golang Wasm Bridge (__go_wasm__.__ready__) still not true after max time");
+        }
+    }, maxTime);
 
 
     proxy = new Proxy(
@@ -75,5 +79,6 @@ export default function (getBytes) {
         }
     );
 
+    bridge.__proxy__ = proxy
     return proxy;
 }
