@@ -207,6 +207,8 @@ func decodeObject(x js.Value, v reflect.Value) error {
 		return decodeObjectIntoStruct(x, v)
 	case reflect.Map:
 		return decodeObjectIntoMap(x, v)
+	case reflect.Complex64, reflect.Complex128:
+		return decodeObjectIntoComplex(x, v)
 	default:
 		return InvalidTypeError{js.TypeObject, v.Type()}
 	}
@@ -278,6 +280,22 @@ func decodeObjectIntoMap(x js.Value, v reflect.Value) error {
 
 		v.SetMapIndex(reflect.ValueOf(k), reflect.ValueOf(valuePtr).Elem())
 	}
+	return nil
+}
+
+// decodeObjectIntoComplex decodes the provided object into a complex number.
+func decodeObjectIntoComplex(x js.Value, v reflect.Value) error {
+	var r, i float64
+	err := FromJSValue(x.Get("real"), &r)
+	if err != nil {
+		return err
+	}
+	err = FromJSValue(x.Get("imag"), &i)
+	if err != nil {
+		return err
+	}
+
+	v.SetComplex(complex(r, i))
 	return nil
 }
 
