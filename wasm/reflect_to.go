@@ -154,6 +154,9 @@ func structToJSObject(x reflect.Value) js.Value {
 
 		name := field.Name
 		if tagName, ok := field.Tag.Lookup("wasm"); ok {
+			if tagName == "-" {
+				continue
+			}
 			name = tagName
 		}
 

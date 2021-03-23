@@ -224,6 +224,9 @@ func decodeObjectIntoStruct(x js.Value, v reflect.Value) error {
 		tagName, tagOK := fieldType.Tag.Lookup("wasm")
 
 		if tagOK {
+			if tagName == "-" {
+				continue
+			}
 			name = tagName
 		}
 
