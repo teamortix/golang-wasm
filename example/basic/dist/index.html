@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Golang-WASM Example</title>
+</head>
+
+<body>
+    <h1>This example project uses the Golang-WASM api.</h1>
+    <h3>
+        <a href="https://github.com/teamortix/golang-wasm/blob/master/example/basic/src/api/main.go">
+            Sample Go code
+        </a>
+    </h3>
+
+    <h2>Value from Go:</h2>
+    <h3 id="hello">&nbsp;</h3>
+
+    <h2>Call function from Go:</h2>
+    <input type="text" id="inputName" value="Team Ortix" />
+    <h3 id="name">&nbsp;</h3>
+
+    <h2>Call function that can fail from Go:</h2>
+    <input type="number" id="inputX" value="6" style="height:24px; width: 30px;" />
+    <span style="font-size: 24px;">÷</span>
+    <input type="number" id="inputY" value="2" style="height:24px; width: 30px;" />
+    <h3 id="divide">&nbsp;</h3>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
