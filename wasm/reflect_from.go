@@ -132,7 +132,7 @@ func decodeNothing(v reflect.Value) error {
 	if v.Kind() != reflect.Ptr {
 		return InvalidTypeError{js.TypeNull, v.Type()}
 	}
-	v.Set(reflect.ValueOf(nil))
+	v.Set(reflect.Zero(v.Type()))
 	return nil
 }
 
@@ -320,7 +320,7 @@ func decodeFunction(x js.Value, v reflect.Value) error {
 		case 1:
 			return []reflect.Value{returnVal}
 		case 2:
-			return []reflect.Value{returnVal, reflect.ValueOf(nil)}
+			return []reflect.Value{returnVal, reflect.Zero(v.Type())}
 		default:
 			panic("unexpected amount of return values")
 		}
