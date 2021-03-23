@@ -287,7 +287,7 @@ func DidFunctionSucceed(f func() error) bool {
 
        * Apart from `float64`, `Number` will be safely casted to all `uint` types, `int` types, and `float32`.
 
-       * **⚠️ Note: decoding `complex64` and `complex128` is not yet supported.**
+       * Decoding into `complex64` and `complex128` is similar to when they are encoded. A JS Object with a `real` and `imag` property (type Number) are expected.
 
 
 ### Working with errors
