@@ -21,8 +21,8 @@ const bridge = g.__go_wasm__;
  * 
  * @param {Function} goFunc a function that is expected to return an object of the following specification:
  * {
- *  result:  undefined | any         // undefined when error is returned, or function returns undefined
- *  error:       Error | undefined   // undefined when no error is present
+ *  result:  undefined | any         // undefined when error is returned, or function returns undefined.
+ *  error:       Error | undefined   // undefined when no error is present.
  * }
  * 
  * @returns {Function} returns a function that take arguments which are used to call the Go function.
@@ -43,7 +43,7 @@ function wrapper(goFunc) {
  * However, if the window is not focused, requestAnimationFrame never returns.
  * A timeout will ensure to be called after 50 ms, regardless of whether or not the tab is in focus.
  * 
- * @returns {Promise} an always-resolving promise when a tick has been completed
+ * @returns {Promise} an always-resolving promise when a tick has been completed.
  */
 function sleep() {
     return new Promise((res) => {
@@ -57,7 +57,7 @@ function sleep() {
 /**
  * @param {ArrayBuffer} getBytes a promise that is bytes of the Go Wasm object.
  * 
- * @returns {Proxy} an object that can be used to call Wasm's objects and properly parse their results.
+ * @returns {Proxy} an object that can be used to call WASM's objects and properly parse their results.
  * 
  * All values that want to be retrieved from the proxy, regardless of if they are a function or not, must be retrieved
  * as if they are from a function call. 
@@ -66,11 +66,12 @@ function sleep() {
  */
 export default function (getBytes) {
     let proxy;
+    let go;
 
     async function init() {
         bridge.__wrapper__ = wrapper;
 
-        const go = new g.Go();
+        go = new g.Go();
         let bytes = await getBytes;
         let result = await WebAssembly.instantiate(bytes, go.importObject);
         go.run(result.instance);
@@ -90,6 +91,9 @@ export default function (getBytes) {
             get: (_, key) => {
                 return (...args) => {
                     return new Promise(async (res, rej) => {
+                        if (!go || go.exited) {
+                            return rej(new Error("The Go instance is not active."));
+                        }
                         while (bridge.__ready__ !== true) {
                             await sleep();
                         }
@@ -98,7 +102,7 @@ export default function (getBytes) {
                             res(bridge[key]);
 
                             if (args.length !== 0) {
-                                console.warn("Retrieved value from WASM returned non-error type, however called with arguments.")
+                                console.warn("Retrieved value from WASM returned function type, however called with arguments.")
                             }
                             return;
                         }
