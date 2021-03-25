@@ -253,18 +253,17 @@ func DidFunctionSucceed(f func() error) bool {
 * Marshalling function parameters to Go values has slightly different functionality.
 
     * If a function parameter is not a concrete type (`interface{}`), Go returns types in the following fashion:
--
-        |  JS Type  |                  Go Type                  |
-        |:---------:|:-----------------------------------------:|
-        | undefined |                    nil                    |
-        |    null   |                    nil                    |
-        |  Boolean  |                    bool                   |
-        |   Number  |                  float64                  |
-        |   String  |                   string                  |
-        |   Symbol  |               unimplemented               |
-        |   Array   |        [size]interface{} (Go array)       |
-        |   Object  |           map[string]interface{}          |
-        |  Function | func(...interface{}) (interface{}, error) |
+      |  JS Type  |                  Go Type                  |
+      |:---------:|:-----------------------------------------:|
+      | undefined |                    nil                    |
+      |    null   |                    nil                    |
+      |  Boolean  |                    bool                   |
+      |   Number  |                  float64                  |
+      |   String  |                   string                  |
+      |   Symbol  |               unimplemented               |
+      |   Array   |        [size]interface{} (Go array)       |
+      |   Object  |           map[string]interface{}          |
+      |  Function | func(...interface{}) (interface{}, error) |
 
 
     * Go pointers will result in the basic value.
