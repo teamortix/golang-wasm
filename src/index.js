@@ -6,11 +6,12 @@ const { lookpath } = require("lookpath");
 
 module.exports = function (source) {
     const cb = this.async();
-
-    const goBin = lookpath("go");
-    if (!goBin) {
-        return cb(new Error("go bin not found in path."));
-    }
+    var gb;
+    lookpath("go").then((v) => {
+        gb=v;
+    }).catch((e)=> {
+        return cb(e);
+    });
 
     if (!process.env.GOROOT) {
         return cb(new Error("Could not find GOROOT in environment.\n" +
@@ -61,7 +62,7 @@ module.exports = function (source) {
         }
 
 
-        const result = await execFile("go", ["build", "-o", outFile, parent], opts)
+        const result = await execFile(gb, ["build", "-o", outFile, parent], opts)
             .then(() => true)
             .catch(e => e);
         if (result instanceof Error) {
