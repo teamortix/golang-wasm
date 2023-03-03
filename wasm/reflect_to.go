@@ -55,7 +55,19 @@ func ToJSValue(x interface{}) js.Value {
 		}
 	}
 
-	switch value.Kind() {
+	switch k := value.Kind(); k {
+	case reflect.Bool:
+		return js.ValueOf(value.Bool())
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return js.ValueOf(value.Int())
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return js.ValueOf(value.Uint())
+	case reflect.Uintptr:
+		return js.ValueOf(value.Pointer())
+	case reflect.Float32, reflect.Float64:
+		return js.ValueOf(value.Float())
+	case reflect.String:
+		return js.ValueOf(value.String())
 	case reflect.Array, reflect.Slice:
 		return toJSArray(value)
 	case reflect.Func:
@@ -65,7 +77,7 @@ func ToJSValue(x interface{}) js.Value {
 	case reflect.Struct:
 		return structToJSObject(value)
 	default:
-		panic(fmt.Sprintf("cannot convert %T to a JS value", x))
+		panic(fmt.Sprintf("cannot convert %T to a JS value (kind %s)", x, k))
 	}
 }
 
