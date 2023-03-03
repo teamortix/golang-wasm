@@ -173,5 +173,16 @@ func structToJSObject(x reflect.Value) js.Value {
 		obj.Set(name, ToJSValue(x.Field(i).Interface()))
 	}
 
+	for i := 0; i < structType.NumMethod(); i++ {
+		method := structType.Method(i)
+		obj.Set(method.Name, toJSFunc(method.Func))
+	}
+
+	structPtr := reflect.PointerTo(structType)
+	for i := 0; i < structPtr.NumMethod(); i++ {
+		method := structPtr.Method(i)
+		obj.Set(method.Name, toJSFunc(method.Func))
+	}
+
 	return obj
 }
