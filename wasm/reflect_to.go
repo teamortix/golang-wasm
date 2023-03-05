@@ -175,13 +175,15 @@ func structToJSObject(x reflect.Value) js.Value {
 
 	for i := 0; i < structType.NumMethod(); i++ {
 		method := structType.Method(i)
-		obj.Set(method.Name, toJSFunc(method.Func))
+		obj.Set(method.Name, toJSFunc(x.Method(i)))
 	}
 
-	structPtr := reflect.PointerTo(structType)
-	for i := 0; i < structPtr.NumMethod(); i++ {
-		method := structPtr.Method(i)
-		obj.Set(method.Name, toJSFunc(method.Func))
+	if x.CanAddr() {
+		structPtr := reflect.PointerTo(structType)
+		for i := 0; i < structPtr.NumMethod(); i++ {
+			method := structPtr.Method(i)
+			obj.Set(method.Name, toJSFunc(x.Addr().Method(i)))
+		}
 	}
 
 	return obj

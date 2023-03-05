@@ -74,7 +74,11 @@ func FromJSValue(x js.Value, out interface{}) error {
 func decodeValue(x js.Value, v reflect.Value) error {
 	// If we have undefined or null, we need to be able to set to the pointer itself.
 	// All code beyond this point are pointer-unaware so we handle undefined or null first.
-	if x.Type() == js.TypeUndefined || x.Type() == js.TypeNull {
+	switch x.Type() {
+	case js.TypeUndefined:
+		// Keep the existing value if it is undefined.
+		return nil
+	case js.TypeNull:
 		return decodeNothing(v)
 	}
 
