@@ -7,6 +7,12 @@ import (
 	"unsafe"
 )
 
+// Wrapper is an interface which manually encodes to js.Value.
+// It overrides in ToJSValue.
+type Wrapper interface {
+	JSValue() js.Value
+}
+
 // ToJSValue converts a given Go value into its equivalent JS form.
 //
 // One special case is that complex numbers (complex64 and complex128) are converted into objects with a real and imag
@@ -29,6 +35,8 @@ func ToJSValue(x interface{}) js.Value {
 
 	// Fast path for basic types that do not require reflection.
 	switch x := x.(type) {
+	case Wrapper:
+		return x.JSValue()
 	case js.Value:
 		return x
 	case bool, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, uintptr,

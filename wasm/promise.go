@@ -1,6 +1,9 @@
 package wasm
 
-import "syscall/js"
+import (
+	"errors"
+	"syscall/js"
+)
 
 // Promise is an instance of a JS promise.
 // The zero value of this struct is not a valid Promise.
@@ -66,6 +69,26 @@ func NewPromise(handler func() (interface{}, error)) Promise {
 	}
 
 	return mustJSValueToPromise(promise.New(jsHandler))
+}
+
+// Await waits for the Promise. It unmarshals the resolved value to v. An error
+// will be returned if unmarshalling is unsuccessful or the Promise rejects.
+// It is implemented by calling then and catch on JS.
+func (p Promise) Await(v interface{}) error {
+	err := make(chan error)
+	p.value.Call("then", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if len(args) > 0 && v != nil {
+			err <- FromJSValue(args[0], v)
+			return nil
+		}
+		err <- nil
+		return nil
+	}))
+	p.value.Call("catch", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		err <- errors.New(args[0].Call("toString").String())
+		return nil
+	}))
+	return <-err
 }
 
 // PromiseAll creates a promise that is fulfilled when all the provided promises have been fulfilled.
