@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"syscall/js"
+	"time"
 	"unsafe"
 )
 
@@ -52,6 +53,12 @@ func ToJSValue(x interface{}) js.Value {
 			"real": real(x),
 			"imag": imag(x),
 		})
+	case time.Time:
+		date, err := Global().Get("Date")
+		if err != nil {
+			panic("Date constructor not found")
+		}
+		return date.New(x.Format(time.RFC3339))
 	}
 
 	value := reflect.ValueOf(x)
@@ -113,11 +120,7 @@ func mapToJSObject(x reflect.Value) js.Value {
 
 	obj := objectConstructor.New()
 	iter := x.MapRange()
-	for {
-		if !iter.Next() {
-			break
-		}
-
+	for iter.Next() {
 		key := iter.Key()
 		value := iter.Value().Interface()
 		switch key := key.Interface().(type) {

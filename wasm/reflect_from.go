@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"syscall/js"
+	"time"
 )
 
 // ErrMultipleReturnValue is an error where a JS function is attempted to be unmarshalled into a Go function with
@@ -123,6 +124,9 @@ func decodeValue(x js.Value, v reflect.Value) error {
 		if isArray(x) {
 			return decodeArray(x, v)
 		}
+		if isDate(x) {
+			return decodeDate(x, v)
+		}
 		return decodeObject(x, v)
 	case js.TypeFunction:
 		return decodeFunction(x, v)
@@ -201,6 +205,17 @@ func decodeArray(x js.Value, v reflect.Value) error {
 			return err
 		}
 	}
+	return nil
+}
+
+// decodeDate decodes a JS date into the provided reflect.Value.
+func decodeDate(x js.Value, v reflect.Value) error {
+	t, ok := v.Addr().Interface().(*time.Time)
+	if !ok {
+		return InvalidTypeError{js.TypeObject, v.Type()}
+	}
+	millis := x.Call("getTime").Int()
+	*t = time.UnixMilli(int64(millis))
 	return nil
 }
 
@@ -422,6 +437,16 @@ func isArray(x js.Value) bool {
 	}
 
 	return arr.Call("isArray", x).Bool()
+}
+
+// isDate uses x instanceof Date to check if the provided js.Value is a Date.
+func isDate(x js.Value) bool {
+	date, err := Global().Get("Date")
+	if err != nil {
+		panic("Date not found")
+	}
+
+	return x.InstanceOf(date)
 }
 
 // initializePointerIfNil checks if the pointer is nil and initializes it as necessary.
