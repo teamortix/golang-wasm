@@ -137,7 +137,7 @@ func decodeValue(x js.Value, v reflect.Value) error {
 
 // decodeNothing decodes an undefined or a null into the provided reflect.Value.
 func decodeNothing(v reflect.Value) error {
-	if v.Kind() != reflect.Ptr {
+	if v.Kind() != reflect.Ptr && v.Kind() != reflect.Interface {
 		return InvalidTypeError{js.TypeNull, v.Type()}
 	}
 	v.Set(reflect.Zero(v.Type()))
@@ -289,6 +289,8 @@ func decodeObjectIntoMap(x js.Value, v reflect.Value) error {
 	if err != nil {
 		panic("Object.keys returned non-string-array.")
 	}
+
+	v.Set(reflect.MakeMapWithSize(mapType, len(keys)))
 
 	for _, k := range keys {
 		valuePtr := reflect.New(valType).Interface()
